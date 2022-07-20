@@ -13,7 +13,7 @@
 //var nerdamerBigDecimal = typeof nerdamerBigDecimal !== 'undefined' ? nerdamerBigDecimal : require('big.js');
 
 var nerdamer = (function (imports) {
-    "use strict"; 
+    "use strict";
 
 //version ======================================================================
     var version = '1.1.13';
@@ -303,7 +303,7 @@ var nerdamer = (function (imports) {
      * Generates an object with known variable value for evaluation
      * @param {String} variable
      * @param {any} value Any stringifyable object
-     * @returns {Object} 
+     * @returns {Object}
      */
     var knownVariable = function (variable, value) {
         var o = {};
@@ -711,8 +711,8 @@ var nerdamer = (function (imports) {
 
     /**
      * Checks to see if two arrays are equal
-     * @param {Array} arr1 
-     * @param {Array} arr2 
+     * @param {Array} arr1
+     * @param {Array} arr2
      */
     var arrayEqual = function (arr1, arr2) {
         arr1.sort();
@@ -988,7 +988,7 @@ var nerdamer = (function (imports) {
 
     /**
      * Gets all the variables in an array of Symbols
-     * @param {Symbol[]} arr 
+     * @param {Symbol[]} arr
      */
     var arrayGetVariables = function (arr) {
         var vars = variables(arr[0], null, null, true);
@@ -2227,7 +2227,7 @@ var nerdamer = (function (imports) {
      * @param {int} useGroup
      * @returns {String}
      */
-    function text(obj, option, useGroup, decp) { 
+    function text(obj, option, useGroup, decp) {
         var asHash = option === 'hash',
                 //whether to wrap numbers in brackets
                 wrapCondition = undefined,
@@ -2501,7 +2501,7 @@ var nerdamer = (function (imports) {
     }
     /**
      * Calculates prime factors for a number. It first checks if the number
-     * is a prime number. If it's not then it will calculate all the primes 
+     * is a prime number. If it's not then it will calculate all the primes
      * for that number.
      * @param {int} num
      * @returns {Array}
@@ -2796,7 +2796,7 @@ var nerdamer = (function (imports) {
     //Aliases
     Expression.prototype.toTeX = Expression.prototype.latex;
 
-    
+
 //Scientific ===================================================================
     /*
      * Javascript has the toExponential method but this allows you to work with string and therefore any number of digits of your choosing
@@ -3107,7 +3107,7 @@ var nerdamer = (function (imports) {
             var dec = whole.toString() + '.' + narr.join('');
             return sign + dec;
         },
-        toDecimal: function (prec) { 
+        toDecimal: function (prec) {
             prec = prec || Settings.PRECISION;
             if(prec) {
                 return this.decimal(prec);
@@ -3329,7 +3329,7 @@ var nerdamer = (function (imports) {
             var rounded = _.parse(nround(root));
             // Reverse the root
             var e = evaluate(_.pow(rounded, _.parse(n)));
-            // If the rounded root equals the original number then we're good 
+            // If the rounded root equals the original number then we're good
             if(e.equals(_.parse(this.multiplier))) {
                 return rounded;
             }
@@ -3342,7 +3342,7 @@ var nerdamer = (function (imports) {
          */
         isToNth: function (n) {
             // Start by check in the multiplier for squareness
-            // First get the root but round it because currently we still depend 
+            // First get the root but round it because currently we still depend
             var root = this.getNth(n);
             var nthMultiplier = isInt(root);
             var nthPower;
@@ -4750,7 +4750,7 @@ var nerdamer = (function (imports) {
             atan: function (r, i) {
                 // Handle i and -i
                 if(r.equals(0) && (i.equals(1) || i.equals(-1))) {
-                    // Just copy Wolfram Alpha for now. The parenthesis 
+                    // Just copy Wolfram Alpha for now. The parenthesis
                     return _.parse(`${Symbol.infinity()}*${Settings.IMAGINARY}*${i}`);
                 }
                 var a, b, c, symbol;
@@ -6252,7 +6252,7 @@ var nerdamer = (function (imports) {
              if(e.charAt(i) === ' ')
              return i;
              }
-             
+
              return L; //assume the end of the string instead
              };
              */
@@ -7015,7 +7015,7 @@ var nerdamer = (function (imports) {
                 var next_is_array = isArray(next);
                 var next_is_minus = next === '-';
 
-                // Remove redundant plusses 
+                // Remove redundant plusses
                 if(e === '^') {
                     if(next === '+') {
                         arr.shift();
@@ -7041,7 +7041,7 @@ var nerdamer = (function (imports) {
 
                     if(before === '*') {
                         narr.pop();
-                        // For simplicity we just pop it. 
+                        // For simplicity we just pop it.
                         before_last = narr.pop();
                     }
                     // Implied multiplication
@@ -7051,7 +7051,7 @@ var nerdamer = (function (imports) {
 
                     narr.push(before_last, '/', last, e);
 
-                    // Remove the negative sign from the power 
+                    // Remove the negative sign from the power
                     if(next_is_array) {
                         next.shift();
                     }
@@ -7551,7 +7551,7 @@ var nerdamer = (function (imports) {
             if(!isSymbol(symbol)) {
                 symbol = _.parse(symbol);
             }
-            
+
             // Exit early for EX
             if(symbol.group === EX) {
                 return _.symfunction(SQRT, [symbol]);
@@ -8795,7 +8795,7 @@ var nerdamer = (function (imports) {
                         [a, b] = [b, a];
                     }
                 }
-                
+
                 //no need to waste time on zeroes
                 if(a.multiplier.equals(0))
                     return b;
@@ -9106,7 +9106,7 @@ var nerdamer = (function (imports) {
                     a.unit = b;
                     return result;
                 }
-                
+
                 //if it has units then just forward that problem to the unit module
                 if(a.unit || b.unit) {
                     return _.Unit.multiply(a, b);
@@ -9543,6 +9543,10 @@ var nerdamer = (function (imports) {
                 return b;
             }
         };
+
+        this.minisculeRound = function(num) {
+          return Math.round(num * 1000000000) / 1000000000;
+        }
         /**
          * Gets called when the parser finds the ^ operator. See this.add
          * @param {Symbol} a
@@ -9557,7 +9561,7 @@ var nerdamer = (function (imports) {
                 if(a.unit || b.unit) {
                     return _.Unit.pow(a, b);
                 }
-                
+
                 // Handle abs
                 if(a.group === FN && a.fname === ABS && even(b)) {
                     var m = a.multiplier.clone();
@@ -9565,7 +9569,7 @@ var nerdamer = (function (imports) {
                     raised.multiplier = m;
                     return raised;
                 }
-                
+
                 // Handle infinity
                 if(a.isInfinity || b.isInfinity) {
                     if(a.isInfinity && b.isInfinity)
@@ -9622,8 +9626,9 @@ var nerdamer = (function (imports) {
                 if(Settings.PARSE2NUMBER && aIsConstant && bIsConstant && a.sign() < 0 && evenFraction(b)) {
                     var k, re, im;
                     k = Math.PI * b;
-                    re = new Symbol(Math.cos(k));
-                    im = _.multiply(Symbol.imaginary(), new Symbol(Math.sin(k)));
+                    var modulo = Math.pow(Math.abs(a.valueOf()), b);
+                    re = new Symbol(this.minisculeRound(Math.cos(k) * modulo));
+                    im = _.multiply(Symbol.imaginary(), new Symbol(this.minisculeRound(Math.sin(k) * modulo)));
                     return _.add(re, im);
                 }
 
@@ -9765,7 +9770,7 @@ var nerdamer = (function (imports) {
                         result = _.multiply(a1, _.add(b1, c1));
                         result = _.expand(_.parse(result));
                         /*
-                         }   
+                         }
                          */
                     }
                     else {
@@ -10254,7 +10259,7 @@ var nerdamer = (function (imports) {
                 p_array[index] = p;
 
                 // special case group P and decimal
-                var retval = (negative ? '-' : '') + this.set(m_array, v_array, p_array, symbol.group === CB);
+                var retval = (negative ? '-' : '') + this.set(m_array, v_array, p_array, symbol.group === CB, option);
 
                 return retval.replace(/\+\-/gi, '-');
             }
@@ -10524,15 +10529,15 @@ var nerdamer = (function (imports) {
 
                 // Apply brackets
                 setBrackets(numerator, num_map, num_c);
-                v[0] = numerator.join(this.dot); // collapse the numerator into one string
+                v[0] = numerator.join(this[(option && option.dot) || 'dot']); // collapse the numerator into one string
 
                 setBrackets(denominator, den_map, den_c);
-                v[1] = denominator.join(this.dot);
+                v[1] = denominator.join(this[(option && option.dot) || 'dot']);
             }
 
             return v;
         },
-        set: function (m, v, p, combine_power) {
+        set: function (m, v, p, combine_power, option) {
             var isBracketed = function (v) {
                 return /^\\left\(.+\\right\)$/.test(v);
             };
@@ -10558,6 +10563,10 @@ var nerdamer = (function (imports) {
             // if denominator is 1 drop it always
             if(Number(md) === 1)
                 md = '';
+
+            if (option && option.standaloneFrac && mn && md && !vd) {
+              return this.join(this.frac(mn, md), vn, '');
+            }
             // prepare the top portion but check that it's not already bracketed. If it is then leave out the cdot
             var top = this.join(mn, vn, !isBracketed(vn) ? this.dot : '');
 
@@ -10765,7 +10774,7 @@ var nerdamer = (function (imports) {
                         var u = parse_next();
                     }
                     var f = parse_next(); // function
-                    
+
                     // get the variable of integration
                     var dx = next().value;
                     // skip the comma
@@ -10797,7 +10806,7 @@ var nerdamer = (function (imports) {
                         var u = parse_next();
                     }
                     var f = parse_next(); // function
-                    
+
                     // get the variable of integration
                     var dx = next().value;
                     // skip the comma
@@ -11858,7 +11867,7 @@ var nerdamer = (function (imports) {
             if(arg_array) {
                 // Fix for issue #546
                 // Disable argument checking since it's a bit presumptuous.
-                // Consider f(x) = 5; If I explicitely pass in an argument array contain x 
+                // Consider f(x) = 5; If I explicitely pass in an argument array contain x
                 // this check will fail and complain since the function doesn't contain x.
                 /*
                  for (var i = 0; i < args.length; i++) {
