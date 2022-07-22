@@ -114,9 +114,9 @@ describe('Solve', function () {
     });
 
     it('should solve factors', function () {
-        expect(nerdamer('solve((x-1)*(-a*c-a*x+c*x+x^2),x)').text()).toEqual('[1,-c,a]');
+        expect(nerdamer('solve((x-1)*(-a*c-a*x+c*x+x^2),x)').text()).toEqual('[1,a,-c]');
     });
-    
+
     it('should solve circle equations', function() {
         var eq1 ="x^2+y^2=1";
         var eq2 ="x+y=1";

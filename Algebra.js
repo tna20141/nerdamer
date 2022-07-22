@@ -111,11 +111,12 @@ if((typeof module) !== 'undefined') {
          * @param {Array} c - a collector array
          * @returns {Polynomial}
          */
-        parse: function (symbol, c) {
+        parse: function (symbol, c, cs) {
             this.variable = variables(symbol)[0];
             if(!symbol.isPoly())
                 throw core.exceptions.NerdamerTypeError('Polynomial Expected! Received ' + core.Utils.text(symbol));
             c = c || [];
+            cs = cs || [];
             if(!symbol.power.absEquals(1))
                 symbol = _.expand(symbol);
 
@@ -142,7 +143,37 @@ if((typeof module) !== 'undefined') {
                 }
             }
 
+            if (symbol.isConstantV2({ variables: [this.variable] })) {
+                cs[0] = _.add(symbol, cs[0] || new Symbol(0));
+            } else if (symbol.group === core.groups.S) {
+              cs[symbol.power.toDecimal()] =
+                _.add(new Symbol(symbol.multiplier), cs[symbol.power.toDecimal()] || new Symbol(0));
+            } else if (symbol.group === core.groups.CB) {
+              for (var x in symbol.symbols) {
+                var sub = symbol.symbols[x];
+                if (sub.value === this.variable) {
+                  // Dividing by the variable we get the coefficient.
+                  cs[sub.power] = _.add(_.divide(symbol.clone(), sub.clone()), cs[sub.power] || new Symbol(0));
+                }
+              }
+            } else {
+                for(var x in symbol.symbols) {
+                    var sub = symbol.symbols[x],
+                            p = sub.power;
+                    p = sub.group === N ? 0 : p.toDecimal();
+                    if (sub.isConstantV2({ variables: [this.variable] })) {
+                      cs[0] = _.add(sub, cs[0] || new Symbol(0));
+                    } else if (sub.symbols) {
+                      this.parse(sub, null, cs);
+                    } else {
+                      // Should be a variable here.
+                      cs[p] = _.add(new Symbol(sub.multiplier), cs[p] || new Symbol(0));
+                    }
+                }
+            }
+
             this.coeffs = c;
+            this.coeffsSym = cs;
 
             this.fill();
         },
@@ -158,6 +189,15 @@ if((typeof module) !== 'undefined') {
                     this.coeffs[i] = new Frac(x);
                 }
             }
+            if (this.coeffsSym) {
+              var ls = this.coeffsSym.length;
+              for (var i = 0; i < ls; i++) {
+                  if(this.coeffsSym[i] === undefined) {
+                      this.coeffsSym[i] = new Symbol(x);
+                  }
+              }
+            }
+
             return this;
         },
         /**
@@ -2446,7 +2486,11 @@ if((typeof module) !== 'undefined') {
                 }
 
                 if(symbol.group === FN && symbol.fname !== 'sqrt') {
-                    symbol = core.Utils.evaluate(symbol);
+                  // core.Utils.evaluate wraps this in a PARSE2NUMBER block, which in some case we don't want.
+                  // The default `factor` function is wrapped in a PARSE2NUMBER block anyway so we don't do it again here
+                  // to allow the pure version the stay symbolic.
+                  // symbol = core.Utils.evaluate(symbol);
+                  symbol = _.parse(symbol);
                 }
 
                 //make a copy of the symbol to return if something goes wrong
@@ -2764,6 +2808,7 @@ if((typeof module) !== 'undefined') {
                                 symbol.each(function (x) {
                                     x.negate();
                                 }, true);
+                              symbol.updateHash();
                             }
                         }
 
@@ -2929,6 +2974,11 @@ if((typeof module) !== 'undefined') {
                             //This can be optimized by stopping as soon as can_divide is false
                             //this will also need utilize big number at some point
                             var can_divide = true;
+                            // An exponential derivative might loop this process forever.
+                            // Therefore skip here.
+                            if (d.group === EX) {
+                              break;
+                            }
                             if(d.isConstant() && symbol.isComposite()) {
                                 //check the coefficients
 
@@ -2941,11 +2991,12 @@ if((typeof module) !== 'undefined') {
                             //if we can divide then do so
                             if(can_divide) {
 
+                                var orig = symbol.clone();
                                 var div = __.div(symbol, d.clone()),
                                         is_factor = div[1].equals(0);
 
                                 // Break infinite loop for factoring e^t*x-1
-                                if((symbol.equals(div[0]) && div[1].equals(0))) {
+                                if((orig.equals(div[0]) && div[1].equals(0))) {
                                     break;
                                 }
 
@@ -2963,7 +3014,7 @@ if((typeof module) !== 'undefined') {
                                 symbol = d;
                             }
                         }
-                        while(is_factor)
+                      while(is_factor)
                     }
                 }
 
@@ -3001,23 +3052,43 @@ if((typeof module) !== 'undefined') {
                         var a, b;
                         a = obj_array.pop();
                         b = obj_array.pop();
+                        var bsign = b.sign();
+                        var asign = a.sign();
 
                         if(even(a.power) && even(b.power)
-                                && a.sign() === b.sign()
+                                && asign === bsign
                                 && a.group === S && b.group === S) {
                             throw new Error('Unable to factor');
                         }
                         ;
 
-                        if(a.isComposite() && b.power.equals(2)) {
-                            //remove the square from b
-                            b = remove_square(b);
+                        if (a.isComposite() && even(b.power)) {
                             var f = __.Factor.factor(_.add(a, separated.constants));
-                            if(f.power.equals(2)) {
-                                f.toLinear();
-                                factors.add(_.subtract(f.clone(), b.clone()));
-                                factors.add(_.add(f, b));
-                                symbol = new Symbol(1);
+                            if (even(f.power)) {
+                              if (bsign === f.sign()) {
+                                throw new Error('Unable to factor');
+                              }
+                              b = remove_square(b);
+                              f = remove_square(f);
+                              factors.add(
+                                bsign < 0 ? _.subtract(f.clone(), b.clone()) : _.subtract(b.clone(), f.clone())
+                              );
+                              factors.add(_.add(f, b));
+                              symbol = new Symbol(1);
+                            }
+                        } else if (b.isComposite() && even(a.power)) {
+                            var f = __.Factor.factor(_.add(b, separated.constants));
+                            if (even(f.power)) {
+                              if (asign === f.sign()) {
+                                throw new Error('Unable to factor');
+                              }
+                              a = remove_square(a);
+                              f = remove_square(f);
+                              factors.add(
+                                asign < 0 ? _.subtract(f.clone(), a.clone()) : _.subtract(a.clone(), f.clone())
+                              );
+                              factors.add(_.add(f, a));
+                              symbol = new Symbol(1);
                             }
                         }
                         else {
@@ -3489,6 +3560,7 @@ if((typeof module) !== 'undefined') {
                     symbol1.each(function (x) {
                         x.multiplier = x.multiplier.divide(symbol2.multiplier);
                     });
+                  symbol1.updateHash();
                     return [symbol1, new Symbol(0)];
                 }
                 // So that factorized symbols don't affect the result
@@ -4555,6 +4627,18 @@ if((typeof module) !== 'undefined') {
             build: function () {
                 var f = function () {
                     var coeffs = __.coeffs.apply(__, arguments);
+                    return new core.Vector(coeffs);
+                };
+                return f;
+            }
+        },
+        {
+            name: 'coeffsV2',
+            visible: true,
+            numargs: [1, 2],
+            build: function () {
+                var f = function () {
+                    var coeffs = __.coeffsV2.apply(__, arguments);
                     return new core.Vector(coeffs);
                 };
                 return f;

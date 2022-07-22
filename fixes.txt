@@ -1,0 +1,47 @@
+Jul 22 2022
+
+- Calculus.js:diff:453
+  clone the temp var when diffing sqrt because there was a bug related to mutating code
+
+- Algebra.js:Polynomial.parse:115
+  also parse into a `cs` array that contains symbolic coefficients (the existing `c` couldn't parse things like sqrt)
+- Algebra.js:coeffs:1955
+  create a new API `coeffsV2` function to use Polynomial.coeffsSym instead
+
+- Algebra.js:_factor:2450
+  change `core.Utils.evaluate` to `_.parse` to avoid the PARSE2NUMBER wrapping for the `factor` method
+
+- nerdamer.core.js:9550
+  add `minisculeRound` method for ad-hoc decimal points rounding utility
+- nerdamer.core.js:pow:9630
+  when nthroot-ing negative numbers. Fix the bug of not nthroot-ing the modulo. Also use `minisculeRound` to mainly discard miniscule calculation offsets (usually becoming 0)
+
+- nerdamer.core.js:abs:7270
+  add some logic to check that if the symbol is a `abs` or `sqrt` function, just return the symbol as they're already non-negative
+
+- nerdamer.core.js:12455
+  add `libExports.pure` to call functions without having to go through the PARSE2NUMBER block
+
+- nerdamder.core.js:value:10540
+  add option to use space for latex multiplication instead of dot
+- nerdamder.core.js:set:10580
+  add option to use space for latex multiplication instead of dot, also an option to display standalone fraction
+
+- nerdamder.core.js:3766
+  add a `isConstantV2` method to symbol to avoid touching `isConstant` (the code there is too messy and even inaccurate)
+    first usage was for parsing polynomial (checking if a term is a constant)
+
+- Algebra.js:coeffFactor:2811
+  add `symbol.updateHash()` after some inner symbols manipulation (for extracting -1 out of greatest term)
+
+- Algebra.js:mSqfrFactor:2970
+  if the derivative is an exponential then quit, since the exponential can be repeatedly derived
+  fix checking dividend and quotient (or else they're the same and will always be equal)
+- Algebra.js:div:3563
+  add `symbol.updateHash()` after multiplier mutation (affecting the equality check of dividend and quotient above)
+
+- Algebra.js:sqdiff:2970
+  Add logic to allow more variation of square diffing and correctly handle signs
+
+- nerdamder.core.js:multiply
+  fix a symbol to retain it's sign after it's multiplier is extracted out

@@ -450,7 +450,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
 
             //unwrap sqrt
             if(symbol.group === FN && symbol.fname === SQRT) {
-                var s = symbol.args[0],
+                var s = symbol.args[0].clone(),
                         sp = symbol.power.clone();
                 //these groups go to zero anyway so why waste time?
                 if(s.group !== N || s.group !== P) {

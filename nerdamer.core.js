@@ -7300,6 +7300,11 @@ var nerdamer = (function (imports) {
                 }
             }
 
+            // List functions that return postive values here.
+            if (symbol.group === FN && ['abs', 'sqrt'].indexOf(symbol.fname) !== -1) {
+              return symbol.clone();
+            }
+
             //convert |n*x| to n*|x|
             var m = _.parse(symbol.multiplier);
             symbol.toUnitMultiplier();
@@ -9366,7 +9371,7 @@ var nerdamer = (function (imports) {
                         }
                     }
                     else {
-                        result = b.clone().toUnitMultiplier();
+                        result = b.clone().toUnitMultiplier(true);
                     }
                 }
 
