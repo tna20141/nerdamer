@@ -45,3 +45,9 @@ Jul 22 2022
 
 - nerdamder.core.js:multiply
   fix a symbol to retain it's sign after it's multiplier is extracted out
+
+- Algebra.js:Polynomial:50
+  fix polynomial parsing to allow setting custom variable (in the case of multi-variable)
+
+- Algebra.js:1984
+  add `polyTex` function to render latex specifically for polynomial (grouping by degree)

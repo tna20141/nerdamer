@@ -49,8 +49,8 @@ if((typeof module) !== 'undefined') {
      */
     function Polynomial(symbol, variable, order) {
         if(core.Utils.isSymbol(symbol)) {
-            this.parse(symbol);
             this.variable = this.variable || variable;
+            this.parse(symbol);
         }
         else if(!isNaN(symbol)) {
             order = order || 0;
@@ -112,8 +112,8 @@ if((typeof module) !== 'undefined') {
          * @returns {Polynomial}
          */
         parse: function (symbol, c, cs) {
-            this.variable = variables(symbol)[0];
-            if(!symbol.isPoly())
+            this.variable = this.variable || variables(symbol)[0];
+            if(!this.variable && !symbol.isPoly())
                 throw core.exceptions.NerdamerTypeError('Polynomial Expected! Received ' + core.Utils.text(symbol));
             c = c || [];
             cs = cs || [];
@@ -1984,6 +1984,50 @@ if((typeof module) !== 'undefined') {
                 return x.invert();
             });
         },
+        polyTex: function(symbol, varName) {
+            const option = { standaloneFrac: 'true', dot: 'space' };
+            var poly = new Polynomial(symbol, String(varName));
+
+            var ll = '';
+            for(var i = poly.coeffsSym.length - 1; i >= 0; i--) {
+                var coeff = poly.coeffsSym[i];
+                if (!coeff || coeff.equals(0)) {
+                    continue;
+                }
+                var varTex = '';
+                var coeffTex;
+                if (coeff.equals(1)) {
+                    coeffTex = '';
+                } else if (coeff.equals(-1)) {
+                    coeffTex = '-';
+                } else if (coeff.group !== CP || i === 0) {
+                    coeffTex = coeff.latex(option);
+                } else {
+                    coeffTex = '\\left(' + coeff.latex(option) + '\\right)';
+                    var neg = false;
+                    if (coeff.symbols) {
+                        for (var x in coeff.symbols) {
+                            if (coeff.symbols[x].sign() < 0) {
+                                neg = true;
+                            }
+                            continue;
+                        }
+                    }
+                    if (neg) {
+                        coeffTex = '-\\left(' + coeff.clone().negate().latex(option) + '\\right)';
+                    }
+                }
+                if (i === 1) {
+                    varTex = poly.variable;
+                } else if (i > 1) {
+                    varTex = poly.variable.toString() + '^{' + i + '}';
+                }
+                ll += '+' + coeffTex + varTex;
+            }
+            ll = ll.replace(/\+\-/gi, '-');
+            ll = ll.replace(/^\+/, '');
+            return ll;
+        },
         coeffsV2: function (symbol, wrt, coeffs) {
           wrt = String(wrt);
           symbol = _.expand(symbol);
@@ -1993,7 +2037,7 @@ if((typeof module) !== 'undefined') {
               _.error('Unable to get coefficients using expression ' + symbol.toString());
           var vars = variables(symbol);
           if(vars.length === 1 && vars[0] === wrt && !symbol.isImaginary()) {
-              var poly = new Polynomial(symbol);
+              var poly = new Polynomial(symbol, wrt);
 
               for(var i = 0, l = poly.coeffsSym.length; i < l; i++) {
                   var coeff = poly.coeffsSym[i],
@@ -4628,6 +4672,17 @@ if((typeof module) !== 'undefined') {
                 var f = function () {
                     var coeffs = __.coeffs.apply(__, arguments);
                     return new core.Vector(coeffs);
+                };
+                return f;
+            }
+        },
+        {
+            name: 'polyTex',
+            visible: true,
+            numargs: [1, 2],
+            build: function () {
+                var f = function () {
+                    return __.polyTex.apply(__, arguments);
                 };
                 return f;
             }
