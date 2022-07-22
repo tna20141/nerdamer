@@ -9544,8 +9544,9 @@ var nerdamer = (function (imports) {
             }
         };
 
-        this.minisculeRound = function(num) {
-          return Math.round(num * 10000000 / 10000000;
+        this.minisculeRound = function(num, decimalPoints = 7) {
+          const powerOfTen = Math.pow(10, decimalPoints);
+          return Math.round(num * powerOfTen) / powerOfTen;
         }
         /**
          * Gets called when the parser finds the ^ operator. See this.add

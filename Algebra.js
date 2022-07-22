@@ -40,9 +40,9 @@ if((typeof module) !== 'undefined') {
             evaluate = core.Utils.evaluate;
     //*************** CLASSES ***************//
     /**
-     * Converts a symbol into an equivalent polynomial arrays of 
+     * Converts a symbol into an equivalent polynomial arrays of
      * the form [[coefficient_1, power_1],[coefficient_2, power_2], ... ]
-     * Univariate polymials only. 
+     * Univariate polymials only.
      * @param {Symbol|Number} symbol
      * @param {String} variable The variable name of the polynomial
      * @param {int} order
@@ -306,7 +306,7 @@ if((typeof module) !== 'undefined') {
             }
             return true;
         },
-        /** 
+        /**
          * Substitutes in a number n into the polynomial p(n)
          * @param {Number} n
          * @returns {Frac}
@@ -401,7 +401,7 @@ if((typeof module) !== 'undefined') {
         },
         /**
          * Integrates the polynomial
-         * @returns {Polynomial} 
+         * @returns {Polynomial}
          */
         integrate: function () {
             var new_array = [0], l = this.coeffs.length;
@@ -442,7 +442,7 @@ if((typeof module) !== 'undefined') {
         },
         /**
          * Raises a polynomial P to a power p -> P^p. e.g. (x+1)^2
-         * @param {bool} incl_img - Include imaginary numbers 
+         * @param {bool} incl_img - Include imaginary numbers
          */
         quad: function (incl_img) {
             var roots = [];
@@ -475,7 +475,7 @@ if((typeof module) !== 'undefined') {
             while(!c.equalsNumber(1)) {
                 var y = w.gcd(c);
                 var z = w.divide(y)[0];
-                //one of the factors may have shown up since it's square but smaller than the 
+                //one of the factors may have shown up since it's square but smaller than the
                 //one where finding
                 if(!z.equalsNumber(1) && i > 1) {
                     var t = z.clone();
@@ -528,9 +528,9 @@ if((typeof module) !== 'undefined') {
     /**
      * TODO
      * ===================================================================================
-     * THIS METHOD HAS A NASTY HIDDEN BUG. IT HAS INCONSISTENT RETURN TYPES PRIMARILY DUE TO 
+     * THIS METHOD HAS A NASTY HIDDEN BUG. IT HAS INCONSISTENT RETURN TYPES PRIMARILY DUE TO
      * WRONG ASSUMPTIONS AT THE BEGINNING. THE ASSUMPTION WAS THAT COEFFS WERE ALWAYS GOING BE NUMBERS
-     * NOT TAKING INTO ACCOUNT THAT IMAGINARY NUMBERS. FIXING THIS BREAKS WAY TOO MANY TESTS 
+     * NOT TAKING INTO ACCOUNT THAT IMAGINARY NUMBERS. FIXING THIS BREAKS WAY TOO MANY TESTS
      * AT THEM MOMENT WHICH I DON'T HAVE TO FIX
      * ===================================================================================
      * If the symbols is of group PL or CP it will return the multipliers of each symbol
@@ -538,7 +538,7 @@ if((typeof module) !== 'undefined') {
      * so the symbol multiplier carries the coefficients for all contained symbols.
      * For S it just returns it's own multiplier. This function doesn't care if it's a polynomial or not
      * @param {Array} c The coefficient array
-     * @param {boolean} with_order 
+     * @param {boolean} with_order
      * @return {Array}
      */
     Symbol.prototype.coeffs = function (c, with_order) {
@@ -1871,7 +1871,7 @@ if((typeof module) !== 'undefined') {
                     var img = round(zeroi[i], decp + 8),
                             real = round(zeror[i], decp + 8);
                     // Did the rounding pay off? If the rounding did nothing more than chop off a few digits then no.
-                    // If the rounding results in a a number at least 3 digits shorter we'll keep it else we'll keep 
+                    // If the rounding results in a a number at least 3 digits shorter we'll keep it else we'll keep
                     // the original otherwise the rounding was worth it.
                     real = decp - String(real).length > 2 ? real : zeror[i];
                     var sign = img < 0 ? '-' : '';
@@ -1915,7 +1915,7 @@ if((typeof module) !== 'undefined') {
                         safety = 0;
                 while(!done) {
                     var x = xn - (fn(xn) / df(xn));
-                    //absolute values for both x & xn ensures that we indeed have the radius    
+                    //absolute values for both x & xn ensures that we indeed have the radius
                     var r = Math.abs(x) - Math.abs(xn),
                             delta = Math.abs(r);
                     xn = x;
@@ -2082,9 +2082,9 @@ if((typeof module) !== 'undefined') {
                 try {
                     if(symbol.group === CP) {
                         //this may have the unfortunate side effect of expanding and factoring again
-                        //to only end up with the same result. 
+                        //to only end up with the same result.
                         //TODO: try to avoid this
-                        //collect the symbols and sort to have the longest first. Thinking is that the longest terms 
+                        //collect the symbols and sort to have the longest first. Thinking is that the longest terms
                         //has to contain the variable in order for it to be factorable
                         var symbols = _.expand(symbol.clone(), true).collectSymbols(null, null, function (a, b) {
                             return (b.length || 1) - (a.length || 1);
@@ -2114,7 +2114,7 @@ if((typeof module) !== 'undefined') {
                         //the factor
                         var factor = new Symbol(1);
                         for(var x in map) {
-                            //if this factor is found in all terms since the length of 
+                            //if this factor is found in all terms since the length of
                             //matching variable terms matches the number of original terms
                             if(map[x][1].length === symbols.length) {
                                 //generate a symbol and multiply into the factor
@@ -2224,7 +2224,7 @@ if((typeof module) !== 'undefined') {
                         sum = _.add(sum, t);
                     }
 
-                    //by now we have the factor of zeroes. We'll know if we got it right because 
+                    //by now we have the factor of zeroes. We'll know if we got it right because
                     //we'll get a remainder of zero each time we divide by it
                     if(sum.group !== CP)
                         return symbol; //nothing to do
@@ -2267,7 +2267,7 @@ if((typeof module) !== 'undefined') {
 
                     retval.toUnitMultiplier();
 
-                    /* 
+                    /*
                      * NOTE: for sign issues with factor START DEBUGGING HERE
                      */
                     //move the sign to t
@@ -2278,7 +2278,7 @@ if((typeof module) !== 'undefined') {
 
                     retval.each(function (x) {
                         // Related to #566. Since the symbol's group may not have been properly
-                        // updated, it's easier to just parse the symbol and have the parser 
+                        // updated, it's easier to just parse the symbol and have the parser
                         // do the update for us.
                         var factored = _.parse(__.Factor._factor(x));
 
@@ -2576,20 +2576,20 @@ if((typeof module) !== 'undefined') {
 
                         //last minute clean up
                         symbol = _.parse(symbol, core.Utils.getFunctionsSubs(map));
-                        
+
                         var addPower = factors.length === 1;
-                        
+
                         factors.add(_.pow(symbol, _.parse(p)));
 
                         var retval = factors.toSymbol();
-                        
-                        // We may have only factored out the symbol itself so we end up with a factor of one 
+
+                        // We may have only factored out the symbol itself so we end up with a factor of one
                         // where the power needs to be placed back
                         // e.g. factor((2*y+p)^2). Here we end up having a factor of 1 remaining and a p of 2.
                         if(addPower && symbol.equals(1) && retval.isLinear()) {
                             retval = _.pow(retval, _.parse(p));
                         }
-                        
+
                         return retval;
                     }
 
@@ -2633,7 +2633,7 @@ if((typeof module) !== 'undefined') {
              * Makes Symbol square free
              * @param {Symbol} symbol
              * @param {Factors} factors
-             * @@param {String} variable The variable which is being factored 
+             * @@param {String} variable The variable which is being factored
              * @returns {[Symbol, Factor]}
              */
             squareFree: function (symbol, factors, variable) {
@@ -2757,7 +2757,7 @@ if((typeof module) !== 'undefined') {
              * The name says it all :)
              * @param {Symbol} symbol
              * @param {Factor} factors
-             * @@param {String} variable 
+             * @@param {String} variable
              * @returns {Symbol}
              */
             trialAndError: function (symbol, factors, variable) {
@@ -2902,7 +2902,7 @@ if((typeof module) !== 'undefined') {
                             if(d.equals(0))
                                 break;
 
-                            //trial division to see if factors have whole numbers. 
+                            //trial division to see if factors have whole numbers.
                             //This can be optimized by stopping as soon as can_divide is false
                             //this will also need utilize big number at some point
                             var can_divide = true;
@@ -2920,17 +2920,17 @@ if((typeof module) !== 'undefined') {
 
                                 var div = __.div(symbol, d.clone()),
                                         is_factor = div[1].equals(0);
-                                
+
                                 // Break infinite loop for factoring e^t*x-1
                                 if((symbol.equals(div[0]) && div[1].equals(0))) {
                                     break;
                                 }
-                                
+
                                 if(div[0].isConstant()) {
                                     factors.add(div[0]);
                                     break;
                                 }
-                                
+
                             }
                             else
                                 is_factor = false;
@@ -3079,7 +3079,7 @@ if((typeof module) !== 'undefined') {
                         var new_factor = _.expand(div);
 
                         if(new_factor.equals(1))
-                            break; //why divide by one. Just move 
+                            break; //why divide by one. Just move
                         var divided = __.div(symbol.clone(), new_factor);
 
                         if(divided[0].equals(0)) {
@@ -3088,7 +3088,7 @@ if((typeof module) !== 'undefined') {
                         }
 
                         // We potentially ended up with fractional coefficients when the
-                        // trial division was performed. We need to remove 
+                        // trial division was performed. We need to remove
                         // This check will more then likely become superfluous with improvements
                         // to polynomial division
                         if(divided[1].equals(0)) {
@@ -3167,7 +3167,7 @@ if((typeof module) !== 'undefined') {
             }
         },
         /**
-         * Checks to see if a set of "equations" is linear. 
+         * Checks to see if a set of "equations" is linear.
          * @param {type} set
          * @returns {Boolean}
          */
@@ -3304,7 +3304,7 @@ if((typeof module) !== 'undefined') {
             if(a.group === CB || b.group === CB) {
                 var q = _.divide(a.clone(), b.clone()); //get the quotient
                 var t = _.multiply(b.clone(), q.getDenom().invert());//multiply by the denominator
-                //if they have a common factor then the result will not equal one 
+                //if they have a common factor then the result will not equal one
                 if(!t.equals(1))
                     return t;
             }
@@ -3636,7 +3636,7 @@ if((typeof module) !== 'undefined') {
                     var s1 = symbol1.tBase(t_map).sort(init_sort),
                             s2 = symbol2.tBase(t_map).sort(init_sort);
                     var target = is_larger(s1[0], s2[0]) && s1[0].count > s2[0].count ? s2 : s1; //since the num is already larger than we can get the det from denom
-                    var det = get_det(target);//we'll begin by assuming that this will let us know which term 
+                    var det = get_det(target);//we'll begin by assuming that this will let us know which term
                     var quotient = [];
                     if(det) {
                         var lead_var = det[1];
@@ -3892,9 +3892,9 @@ if((typeof module) !== 'undefined') {
                         return _.add(r, q);
                     }
                     //first factor the denominator. This means that the strength of this
-                    //algorithm depends on how well we can factor the denominator. 
+                    //algorithm depends on how well we can factor the denominator.
                     ofactors = __.Factor.factor(den);
-                    //create the template. This method will create the template for solving 
+                    //create the template. This method will create the template for solving
                     //the partial fractions. So given x/(x-1)^2 the template creates A/(x-1)+B/(x-1)^2
                     template = __.PartFrac.createTemplate(den.clone(), ofactors, [], v);
                     tfactors = template[0]; //grab the factors
@@ -4002,8 +4002,8 @@ if((typeof module) !== 'undefined') {
 
             //store the group
             var g = symbol.group;
-            //we're going to trust the user and assume no EX. Calling isPoly 
-            //would eliminate this but no sense in checking twice. 
+            //we're going to trust the user and assume no EX. Calling isPoly
+            //would eliminate this but no sense in checking twice.
             if(symbol.isComposite()) {
                 symbol = symbol.clone();
                 symbol.distributeExponent();
@@ -4047,7 +4047,7 @@ if((typeof module) !== 'undefined') {
          * @param {type} symbol
          * @param {type} v
          * @param {type} raw
-         * @throws {Error} 
+         * @throws {Error}
          * @returns {Object|Symbol[]}
          */
         sqComplete: function (symbol, v, raw) {
@@ -4383,7 +4383,7 @@ if((typeof module) !== 'undefined') {
                 // Simplify common denominators
                 simplified = __.Simplify.ratSimp(simplified);
 
-                // First go for the "cheapest" simplification which may eliminate 
+                // First go for the "cheapest" simplification which may eliminate
                 // your problems right away. factor -> evaluate. Remember
                 // that there's no need to expand since factor already does that
 

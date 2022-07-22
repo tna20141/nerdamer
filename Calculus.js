@@ -196,7 +196,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
     };
     /**
      * Attempts to rewrite a symbol under one common denominator
-     * @param {Symbol} symbol 
+     * @param {Symbol} symbol
      */
     core.Utils.toCommonDenominator = function (symbol) {
         //transform x/a+x -> (ax+x)/a
@@ -489,7 +489,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
 
                 return symbol;
             }
-            
+
             function derive(symbol) {
                 var g = symbol.group, a, b, cp;
 
@@ -847,7 +847,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                 }
                 return _.parse(format('({0})*({1})^(({2})+1)/(({2})+1)', m, s, p));
             },
-            //If we're just spinning wheels we want to stop. This is why we 
+            //If we're just spinning wheels we want to stop. This is why we
             //wrap integration in a try catch block and call this to stop.
             stop: function (msg) {
                 msg = msg || 'Unable to compute integral!';
@@ -880,7 +880,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
             },
             get_udv: function (symbol) {
                 var parts = [[/*L*/], [/*I*/], [/*A*/], [/*T*/], [/*E*/]];
-                //first we sort them 
+                //first we sort them
                 var setSymbol = function (x) {
                     var g = x.group;
                     if(g === FN) {
@@ -974,7 +974,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                     //to work out way out of this cycle. We'll return the length of
                     //the this.previous array until we're back at level one
                     o.is_cyclic = true;
-                    //return the integral. 
+                    //return the integral.
                     return new Symbol(1);
                 }
                 else
@@ -1051,7 +1051,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                     if(++depth > core.Settings.integration_depth)
                         __.integration.stop('Maximum depth reached. Exiting!');
 
-                    //constants. We first eliminate anything that doesn't have dx. Everything after this has 
+                    //constants. We first eliminate anything that doesn't have dx. Everything after this has
                     //to have dx or else it would have been taken care of below
                     if(!symbol.contains(dx, true)) {
                         retval = _.multiply(symbol.clone(), _.parse(dx));
@@ -1065,7 +1065,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                             __.integration.stop();
                         //check the base
                         if(symbol.contains(dx) && symbol.previousGroup !== FN) {
-                            //if the symbol also contains dx then we stop since we currently 
+                            //if the symbol also contains dx then we stop since we currently
                             //don't know what to do with it e.g. x^x
                             if(symbol.power.contains(dx))
                                 __.integration.stop();
@@ -1242,7 +1242,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                     u = _.multiply(aob, x.clone().toLinear());
                                     v = _.parse(ATAN + inBrackets(u));
                                     //the conversion will be 1+tan(x)^2 -> sec(x)^2
-                                    //since the denominator is now (sec(x)^2)^n and the numerator is sec(x)^2 
+                                    //since the denominator is now (sec(x)^2)^n and the numerator is sec(x)^2
                                     //then the remaining sec will be (n-1)*2;
                                     var n = (Math.abs(symbol.power) - 1) * 2;
                                     //1/sec(x)^n can now be converted to cos(x)^n and we can pull the integral of that
@@ -1285,7 +1285,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                         symbol.toUnitMultiplier();
                         var decomp = __.integration.decompose_arg(arg, dx);
                         //easies way I can think of to get the coefficient and to make sure
-                        //that the symbol is linear wrt dx. I'm not actually trying to get the 
+                        //that the symbol is linear wrt dx. I'm not actually trying to get the
                         //derivative
                         var a = decomp[0],
                                 x = decomp[1],
@@ -1319,7 +1319,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                         }
                         else {
                             if(!a.contains(dx, true) && symbol.isLinear()) { //perform a deep search for safety
-                                //first handle the special cases 
+                                //first handle the special cases
                                 if(fname === ABS) {
                                     //REVISIT **TODO**
                                     var x = _.divide(arg.clone(), a.clone());
@@ -1559,9 +1559,9 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                     return __.integrate(_.expand(symbol), dx, depth, opt);
                                 }
                             }
-                            //otherwise the denominator is one lumped together symbol 
+                            //otherwise the denominator is one lumped together symbol
                             else {
-                                //generate an image for 
+                                //generate an image for
                                 if(l === 2) {
                                     //try u substitution
                                     try {
@@ -1601,7 +1601,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                                 if(!x.isLinear()) //again... linear arguments only wrt x
                                                     __.integration.stop();
 
-                                                //they have to have the same arguments and then we have cleared all the check to 
+                                                //they have to have the same arguments and then we have cleared all the check to
                                                 //make sure we can integrate FN & FN
                                                 var arg2 = sym2.args[0];
                                                 //make sure that their argument matches
@@ -1648,7 +1648,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                                                     //get the sign of du. In this case r carries du as stated before and D(cos(x),x) = -sin(x)
                                                                     var sign = u.fname === COS ? -1 : 1,
                                                                             n = r.power,
-                                                                            //remove the du e.g. cos(x)^2*sin(x)^3 dx -> cos(x)^2*sin(x)^2*sin(x). We're left with two 
+                                                                            //remove the du e.g. cos(x)^2*sin(x)^3 dx -> cos(x)^2*sin(x)^2*sin(x). We're left with two
                                                                             //even powers afterwards which can be transformed
                                                                             k = (n - 1) / 2,
                                                                             //make the transformation cos(x)^2 = 1 - sin(x)^2
@@ -1685,7 +1685,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                                             }
                                                         }
                                                     }
-                                                    //tan(x)*sec(x)^n 
+                                                    //tan(x)*sec(x)^n
                                                     else if(fn1 === SEC && fn2 === TAN && x.isLinear() && sym2.isLinear()) {
                                                         retval = _.parse(format('sec({0})^({1})/({1})', sym1.args[0], sym1.power));
                                                     }
@@ -1858,7 +1858,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                                         p1 = Number(sym1.power),
                                                         p2 = Number(sym2.power);
                                                 if(isInt(p2) && core.Utils.even(p2) && x.power.equals(2)) {
-                                                    //if the substitution 
+                                                    //if the substitution
                                                     var c = _.divide(_.multiply(_.pow(b.clone(), new Symbol(2)),
                                                             _.symfunction(SQRT, [_.divide(b.clone(), a.clone())])),
                                                             _.pow(a.clone(), new Symbol(2)));
@@ -1958,7 +1958,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                                     retval = __.integration.partial_fraction(symbol, dx, depth);
                                             }
                                             else {
-                                                //handle cases such as (1-x^2)^(n/2)*x^(m) where n is odd ___ cracking knuckles... This can get a little hairy 
+                                                //handle cases such as (1-x^2)^(n/2)*x^(m) where n is odd ___ cracking knuckles... This can get a little hairy
                                                 if(sym1.power.den.equals(2)) {
                                                     //assume the function is in the form (a^2-b*x^n)^(m/2)
                                                     var dc = __.integration.decompose_arg(sym1.clone().toLinear(), dx),
@@ -2245,7 +2245,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                 }
                 while(indeterminate)
 
-                //REMEMBER: 
+                //REMEMBER:
                 //- 1/cos(x)
                 //n/0 is still possible since we only checked for 0/0
                 var den_is_zero = lim2.equals(0);
@@ -2330,7 +2330,7 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                     //https://en.wikipedia.org/wiki/List_of_limits
                     var retval;
                     //we try the simplest option first where c is some limit
-                    //lim a as x->c = a where c 
+                    //lim a as x->c = a where c
                     if(symbol.isConstant(true)) {
                         retval = symbol;
                     }
@@ -2508,12 +2508,12 @@ if((typeof module) !== 'undefined' && typeof nerdamer === 'undefined') {
                                         else {
                                             //lim f*g = (lim f)*(lim g)
                                             lim1 = _.multiply(lim1, lim2);
-                                            //let f*g equal f and h equal g 
+                                            //let f*g equal f and h equal g
                                             f = _.multiply(f, g);
                                         }
                                     }
 
-                                    //Done, lim1 is the limit we're looking for     
+                                    //Done, lim1 is the limit we're looking for
                                     retval = lim1;
                                 }
                                 else if(symbol.isComposite()) {
