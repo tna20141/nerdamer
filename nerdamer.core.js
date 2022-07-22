@@ -3763,6 +3763,39 @@ var nerdamer = (function (imports) {
         isSQRT: function () {
             return this.fname === SQRT;
         },
+        isConstantV2: function(option) {
+          if (this.symbols) {
+            for(var x in this.symbols) {
+              if(!this.symbols[x].isConstantV2(option))
+                return false;
+            }
+            return true;
+          }
+
+          if(this.isPi() || this.isE()) {
+            return true;
+          }
+
+          if(this.group === FN) {
+            for(var i = 0; i < this.args.length; i++) {
+              if(!this.args[i].isConstantV2(option))
+                  return false;
+            }
+            return true;
+          }
+
+          if (this.group === S) {
+            // If provided a list of variables, and this symbol is not any of them,
+            // then it's a constant.
+            if (option && option.variables && option.variables.indexOf(this.value) === -1)
+              return true;
+            return false;
+          }
+          if (isNumericSymbol(this) || this.value === CONST_HASH)
+            return true;
+
+          return false;
+        },
         isConstant: function (check_all, check_symbols) {
             if(check_symbols && this.group === CB) {
                 for(var x in this.symbols) {
@@ -10569,10 +10602,10 @@ var nerdamer = (function (imports) {
               return this.join(this.frac(mn, md), vn, '');
             }
             // prepare the top portion but check that it's not already bracketed. If it is then leave out the cdot
-            var top = this.join(mn, vn, !isBracketed(vn) ? this.dot : '');
+            var top = this.join(mn, vn, !isBracketed(vn) ? this[(option && option.dot) || 'dot'] : '');
 
             // prepare the bottom portion but check that it's not already bracketed. If it is then leave out the cdot
-            var bottom = this.join(md, vd, !isBracketed(vd) ? this.dot : '');
+            var bottom = this.join(md, vd, !isBracketed(vd) ? this[(option && option.dot) || 'dot'] : '');
             // format the power if it exists
             // make it a fraction if both top and bottom exists
             if(top && bottom) {
@@ -12444,6 +12477,15 @@ var nerdamer = (function (imports) {
             if(!(x in libExports) || override)
                 libExports[x] = linker(x);
     };
+
+    // Providing the option to no go through a PARSE2NUMBER block from `updateAPI`.
+    libExports.pure = function(fname, args) {
+      let _args = [];
+      for(var i = 0; i < args.length; i++)
+        _args[i] = _.parse(args[i]);
+      return new Expression(_.callfunction(fname, _args));
+    }
+
 
     libExports.replaceFunction = function (name, fn, num_args) {
         var existing = _.functions[name];

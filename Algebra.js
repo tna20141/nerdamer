@@ -1944,6 +1944,29 @@ if((typeof module) !== 'undefined') {
                 return x.invert();
             });
         },
+        coeffsV2: function (symbol, wrt, coeffs) {
+          wrt = String(wrt);
+          symbol = _.expand(symbol);
+          coeffs = coeffs || [new Symbol(0)];
+          //we cannot get coeffs for group EX
+          if(symbol.group === EX && symbol.contains(wrt, true))
+              _.error('Unable to get coefficients using expression ' + symbol.toString());
+          var vars = variables(symbol);
+          if(vars.length === 1 && vars[0] === wrt && !symbol.isImaginary()) {
+              var poly = new Polynomial(symbol);
+
+              for(var i = 0, l = poly.coeffsSym.length; i < l; i++) {
+                  var coeff = poly.coeffsSym[i],
+                          e = coeffs[i];
+                  if(e)
+                      coeff = _.add(e, coeff);
+                  coeffs[i] = coeff; //transfer it all over
+              }
+          } else {
+            _.error('Polynomial contains more than one variable!');
+          }
+          return coeffs;
+        },
         coeffs: function (symbol, wrt, coeffs) {
             wrt = String(wrt);
             symbol = _.expand(symbol);
